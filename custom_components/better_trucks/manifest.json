@@ -1,0 +1,16 @@
+{
+  "domain": "better_trucks",
+  "name": "Better Trucks",
+  "codeowners": [
+    "@peternijssen"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/ha-parcel-integrations/ha-better-trucks",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/ha-parcel-integrations/ha-better-trucks/issues",
+  "quality_scale": "silver",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.9.0"
+}
