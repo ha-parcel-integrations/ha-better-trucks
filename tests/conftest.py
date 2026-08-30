@@ -20,9 +20,7 @@ def reset_one_shot_warnings():
     makes them leak across tests, so whether a warning fires would otherwise
     depend on test order.
     """
-    from custom_components.better_trucks import api
-    from custom_components.better_trucks import coordinator
-    from custom_components.better_trucks import parcels
+    from custom_components.better_trucks import api, coordinator, parcels
 
     api._warned.clear()
     coordinator._warned_throttling = False
