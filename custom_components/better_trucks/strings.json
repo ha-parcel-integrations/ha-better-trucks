@@ -59,7 +59,7 @@
         }
       },
       "settings": {
-        "title": "Better Trucks settings",
+        "title": "Settings",
         "data": {
           "delivered_filter_type": "Delivered parcels: filter by",
           "delivered_filter_amount": "Delivered parcels: amount",
