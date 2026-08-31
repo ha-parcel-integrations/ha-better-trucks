@@ -35,6 +35,10 @@ you act in one of these areas:
 
 ## Carrier-specific notes
 
+- **No `awaiting_pickup` sensor, deliberately.** Better Trucks has no pickup
+  point concept — `pickup`/`pickup_point` are hardcoded `False`/`None` in
+  `parcels.py`, not derived from a status that could ever fire. Structural,
+  not a gap — see `.github/CONVENTIONS.md`'s pickup-point convention.
 - **Keyless, code-based tracking:** Tracking endpoint `https://tracking.bettertrucks.com/api/tracking/{tracking_code}?isFromExternalTracking=true` needs no credentials or cookies.
 - **Not-found is HTTP 200 (UNKNOWN sentinel):** Unknown tracking codes return `200` with `status="UNKNOWN"` and `tracking_history=[]`. This is a pending placeholder state, not an error. Never branch on HTTP status or raise `UpdateFailed` for unrecognised codes.
 - **Status vocabulary & prefix rule:**
