@@ -357,7 +357,7 @@ def test_delivered_filter_keeps_unparseable_timestamp():
 
 
 # ---------------------------------------------------------------------------
-# Pre-1.0 WARNING obligations (BUILD_PLAN.md §5)
+# Pre-1.0 WARNING obligations
 # ---------------------------------------------------------------------------
 
 

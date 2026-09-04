@@ -129,7 +129,7 @@ async def test_get_parcel_propagates_network_error():
 
 
 # ---------------------------------------------------------------------------
-# Not-found contract change — pre-1.0 WARNING obligation (BUILD_PLAN.md §5)
+# Not-found contract change — pre-1.0 WARNING obligation
 # ---------------------------------------------------------------------------
 
 
