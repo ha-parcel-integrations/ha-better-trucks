@@ -12,7 +12,7 @@ from . import BetterTrucksConfigEntry
 # identifies a person, an address or a specific parcel. Over-redacting is
 # cheap; under-redacting leaks a user's home address into a GitHub thread.
 #
-# Better Trucks specific redaction list from tracking.md:
+# Better Trucks specific redaction list:
 # - address_to (city, state, zip) and its latitude/longitude
 # - tracking_status.latitude/longitude and the same on any event
 # - every location object's city/zip

@@ -57,7 +57,7 @@ _HUB_PREFIX = "SCANNED_AT_HUB"
 # simpler than one set per warning kind.
 _warned: set[str] = set()
 
-# The seven documented top-level keys (tracking.md's "Success body" table —
+# The seven documented top-level keys (the "Success body" table —
 # eta/original_eta are one row but two keys). A response carrying anything
 # else means the payload grew a field the one confirmed capture never showed.
 _EXPECTED_TOP_LEVEL_KEYS = frozenset(
@@ -75,7 +75,7 @@ _EXPECTED_TOP_LEVEL_KEYS = frozenset(
     }
 )
 
-# tracking.md's one confirmed sample is BTS_ + 11 alphanumeric characters —
+# The one confirmed sample is BTS_ + 11 alphanumeric characters —
 # a one-sample inference, distinct from the looser config-flow usability
 # guard in config_flow.py (BTS_ + 8-20 characters), which exists only to
 # catch obvious typos and does not claim to know the real shape.
