@@ -23,6 +23,12 @@ you act in one of these areas:
 | consider "fixing" a lint/pattern the skill flags (poll interval, inline client, sync requests) | *Deliberate skill divergences* — likely intentional, don't re-flag |
 | commit, bump, tag, release, or write release notes; add a feature without a test | *Workflow / Commits / Versioning / Testing* |
 
+**Structure, options flow, dynamic polling and module layout are suite-wide**
+and identical in every carrier — the authoritative spec is
+[`ha-carrier-template/scaffold/CLAUDE.md`](https://github.com/ha-parcel-integrations/ha-carrier-template/blob/main/scaffold/CLAUDE.md).
+Where this repo diverges from it, that is recorded below under
+*Divergences from the scaffold*.
+
 **Suite-wide tripwires, kept inline on purpose:**
 - **First refresh in `__init__.py`, before `async_forward_entry_setups`** — from
   a forwarded platform HA can't catch `ConfigEntryNotReady` and half-sets-up the
@@ -53,67 +59,13 @@ you act in one of these areas:
 - **Pre-1.0 WARNING obligations** (`parcels.py`'s `_warn_once`/`_warned`, mirroring `_warn_unmapped_status`): unmapped status, a 429 (first ever — the endpoint was believed unthrottled), the not-found contract breaking (`api.py`: a non-200 for a well-formed number, or a `200` missing the `tracking_status` key entirely — distinct from key-present-but-null), a non-null `event_details.FailureReason` (value withheld, may be free text), an `event_details.DropoffLocation` other than `"Front Door"` (value logged, it's enum-like), the first timestamp parsed (naive values are assumed UTC — logged next to UTC-now), `eta` diverging from `original_eta` pre-delivery or from the delivery timestamp post-delivery, an unexpected top-level payload key, a resolved tracking number not matching the one-sample `BTS_` + 11-char shape, and `shipment_tracking_number` diverging from `tracking_number` (values withheld). All fire once per HA session and only on a real API response — never on the coordinator's own not-yet-fetched placeholder.
 - **API mechanics:** Full documentation lives in `carrier-research/better-trucks/api/`.
 
-## Options and reloads
+## Divergences from the scaffold
 
-The options flow starts with exactly `Parcels` and `Settings`. `Parcels` is one
-editable multi-code list; `Settings` is a flat form. Changes apply without a
-restart. Two models, **do not mix them**:
-- **Account-less carriers** (the default) apply changes live: an update listener
-  calls `async_request_refresh()`, so added/removed parcel sensors appear
-  immediately (this is also the resume path after polling has fully
-  suspended — see "Dynamic polling" below).
-- **Account-based carriers** call `async_schedule_reload` on submit and register
-  **no** update listener. Combining a listener with a reload-on-update flow is
-  deprecated, an error in HA 2026.12+.
+Everything not listed here follows the scaffold exactly.
 
-## Dynamic polling
-
-There is no user-facing polling interval — this is a deliberate suite-wide
-choice, not a gap. `coordinator.py` recomputes `update_interval` at the end of
-every refresh:
-
-- **Quiet window:** no polling 00:00–06:00 local time, except two daily
-  anchors (~00:00 and ~06:00) for overnight / end-of-day catch-up.
-- **Tiers while polling:** *hot* (15 min) when a tracked, not-yet-delivered
-  parcel is `out_for_delivery` within an hour of its `planned_from` (or has no
-  `planned_from` at all); *mid* (45 min) for anything else still in flight —
-  `problem`/`returning` included, deliberately not hot.
-- **Full stop:** `update_interval = None` when nothing is tracked or every
-  tracked parcel is delivered. Resumes the moment a parcel is added back, via
-  the options-flow refresh above.
-- **Stagger:** a small, stable per-install offset (hash of the config entry
-  id) is added to every computed interval so installs don't all hit an anchor
-  or tier boundary at the same second.
-- **429 backoff:** a 429 anywhere in a poll raises `UpdateFailed` with
-  `retry_after` — Better Trucks's own `Retry-After` header if present,
-  otherwise an exponential backoff tracked per-coordinator (`api.py`'s
-  `BetterTrucksApiError.status_code` / `.retry_after` carry this from the
-  HTTP layer). No 429 has actually been observed against this endpoint yet
-  (see *Carrier-specific notes*), but the backoff machinery is unconditional
-  across the suite.
-
-## Module layout
-
-| File | Carrier-specific? |
-|---|---|
-| `api.py` (HTTP client, error types) | **yes** |
-| `const.py` (domain, URLs, `ParcelStatus`, option keys) | partly (URLs) |
-| `parcels.py` (status map, `normalize_parcel`, history, sort, filters — pure, no I/O) | partly (`_STATUS_MAP`, `normalize_parcel`) |
-| `coordinator.py` (fetch, cache, event firing) | mostly not |
-| `config_flow.py` | partly (code validation) |
-| `sensor.py` / `button.py` / `calendar.py` / `device_trigger.py` | no |
-| `diagnostics.py` | partly (`TO_REDACT`) |
-| `services.py` (`track_parcel` / `untrack_parcel`, account-less only) | no |
-
-`parcels.py` is deliberately free of I/O and HA objects so the per-carrier part
-stays unit-testable without Home Assistant. Config: `ConfigEntry.runtime_data`
-(typed, no `hass.data`), `PARALLEL_UPDATES = 0`, coordinator takes
-`config_entry=entry`. `aiohttp.ClientError` is caught **per parcel** in the gather
-loop (one bad parcel doesn't fail the poll) but **not** around the whole update
-(the coordinator wraps that). Entities: `has_entity_name` + `translation_key`,
-`icons.json`, translated units, `_attr_attribution`, `_unrecorded_attributes` on
-anything with a parcel list or `raw`. Over-redact diagnostics — they get pasted
-into public issues.
+*Dynamic polling* — **no 429 has ever been observed against this endpoint**
+(see *Carrier-specific notes*); the suite's backoff machinery is still wired
+up unconditionally.
 
 ## Running tests
 
