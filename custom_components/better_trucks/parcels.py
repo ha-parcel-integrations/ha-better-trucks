@@ -75,10 +75,9 @@ _EXPECTED_TOP_LEVEL_KEYS = frozenset(
     }
 )
 
-# The one confirmed sample is BTS_ + 11 alphanumeric characters —
-# a one-sample inference, distinct from the looser config-flow usability
-# guard in config_flow.py (BTS_ + 8-20 characters), which exists only to
-# catch obvious typos and does not claim to know the real shape.
+# The one confirmed sample is BTS_ + 11 alphanumeric characters — a
+# one-sample inference used only for this diagnostic warning, not for
+# input validation (config_flow.py accepts any non-empty code).
 _OBSERVED_NUMBER_RE = re.compile(r"^BTS_[A-Z0-9]{11}$")
 
 

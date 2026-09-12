@@ -21,14 +21,10 @@ def test_normalize_tracking_code_strips_and_uppercases():
     assert normalize_tracking_code(None) == ""
 
 
-def test_valid_tracking_code_bounds():
-    """Better Trucks format: BTS_ prefix + 8-20 alphanumeric characters."""
+def test_valid_tracking_code_accepts_any_nonempty():
     assert valid_tracking_code("BTS_12345678")
-    assert valid_tracking_code("BTS_ABCDEFGHIJKLMNOPQRST")  # 20 chars after prefix
-    assert not valid_tracking_code("BTS_1234567")  # too short (7 chars after prefix)
-    assert not valid_tracking_code("BTS_" + "A" * 21)  # too long (21 chars after prefix)
-    assert not valid_tracking_code("EXAMPLE123456")  # missing BTS_ prefix
-    assert not valid_tracking_code("BTS_123-456")  # dashes not allowed (will be stripped)
+    assert valid_tracking_code("EXAMPLE123456")  # missing BTS_ prefix, still accepted
+    assert not valid_tracking_code("")
 
 
 async def test_user_flow_creates_hub_without_input(hass):
@@ -111,14 +107,17 @@ async def test_options_add_code_with_separators(hass):
     ]
 
 
-async def test_options_add_invalid_tracking_code(hass):
+async def test_options_accepts_a_code_that_wouldnt_match_a_shape_regex(hass):
     entry = _hub([])
     entry.add_to_hass(hass)
     result = await _open_options_step(hass, entry, "parcels")
     result = await hass.config_entries.options.async_configure(
-        result["flow_id"], _parcel_input("BTS_1234567")  # Too short
+        result["flow_id"], _parcel_input("BTS_1234567")  # too short for the old regex
     )
-    assert result["errors"]["base"] == "invalid_tracking_code"
+    assert result["type"] == "create_entry"
+    assert result["data"][CONF_PARCELS] == [
+        {CONF_TRACKING_CODE: "BTS_1234567"}
+    ]
 
 
 async def test_options_de_duplicates_tracking_codes(hass):

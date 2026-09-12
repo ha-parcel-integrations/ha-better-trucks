@@ -30,11 +30,6 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-# Better Trucks tracking code format: BTS_ prefix followed by 8-20 alphanumeric characters.
-# This is a config-flow usability guard only; the endpoint itself validates nothing
-# and accepts malformed codes (they return the UNKNOWN skeleton).
-_TRACKING_CODE_RE = re.compile(r"^BTS_[A-Z0-9]{8,20}$")
-
 
 def normalize_tracking_code(value: str) -> str:
     """Return the tracking code upper-cased with dashes/spaces normalised.
@@ -51,8 +46,8 @@ def normalize_tracking_code(value: str) -> str:
 
 
 def valid_tracking_code(value: str) -> bool:
-    """Whether ``value`` looks like a Better Trucks tracking code."""
-    return bool(_TRACKING_CODE_RE.match(value))
+    """Accept every non-empty code; the endpoint validates nothing and returns UNKNOWN for a bad one anyway."""
+    return bool(value)
 
 
 def _current_parcels(entry: ConfigEntry) -> list[dict[str, str]]:
