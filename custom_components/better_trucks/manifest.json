@@ -2,7 +2,7 @@
   "domain": "better_trucks",
   "name": "Better Trucks",
   "codeowners": [
-    "@peternijssen"
+    "@peter-mdf"
   ],
   "config_flow": true,
   "documentation": "https://github.com/ha-parcel-integrations/ha-better-trucks",
