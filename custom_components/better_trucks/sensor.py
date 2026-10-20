@@ -1,4 +1,5 @@
 """Sensor platform for the Better Trucks parcel tracker integration."""
+
 from __future__ import annotations
 
 import logging
@@ -30,7 +31,6 @@ _LOGGER = logging.getLogger(__name__)
 PARALLEL_UPDATES = 0
 
 
-
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: BetterTrucksConfigEntry,
@@ -42,9 +42,7 @@ async def async_setup_entry(
     # than (too late) from this forwarded platform.
     coordinator = entry.runtime_data.coordinator
 
-    current_barcodes: set[str] = {
-        p.get("barcode", "") for p in coordinator.data or []
-    }
+    current_barcodes: set[str] = {p.get("barcode", "") for p in coordinator.data or []}
     entry_id = entry.entry_id
 
     # Remove per-parcel sensors from the registry whose barcode is no longer
@@ -64,7 +62,7 @@ async def async_setup_entry(
             and entity_entry.unique_id.startswith(f"{entry_id}_")
             and entity_entry.unique_id not in non_parcel_unique_ids
         ):
-            barcode = entity_entry.unique_id[len(f"{entry_id}_"):]
+            barcode = entity_entry.unique_id[len(f"{entry_id}_") :]
             if barcode not in current_barcodes:
                 registry.async_remove(entity_entry.entity_id)
 
@@ -151,7 +149,9 @@ class BetterTrucksIncomingParcelsSensor(
         super()._handle_coordinator_update()
 
 
-class BetterTrucksParcelSensor(CoordinatorEntity[BetterTrucksCoordinator], SensorEntity):
+class BetterTrucksParcelSensor(
+    CoordinatorEntity[BetterTrucksCoordinator], SensorEntity
+):
     """Per-parcel sensor reporting the status of one tracked Better Trucks parcel."""
 
     _attr_has_entity_name = True

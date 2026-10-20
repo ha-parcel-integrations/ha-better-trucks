@@ -1,4 +1,5 @@
 """Better Trucks parcel tracker custom component for Home Assistant."""
+
 from __future__ import annotations
 
 import logging
@@ -27,7 +28,9 @@ class BetterTrucksData:
 type BetterTrucksConfigEntry = ConfigEntry[BetterTrucksData]
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: BetterTrucksConfigEntry) -> bool:
+async def async_setup_entry(
+    hass: HomeAssistant, entry: BetterTrucksConfigEntry
+) -> bool:
     """Set up Better Trucks from a config entry."""
     # No auth: Better Trucks tracking is public, so the HA-managed session is fine.
     client = BetterTrucksApiClient(async_get_clientsession(hass))
@@ -64,7 +67,9 @@ async def _async_options_updated(
     await entry.runtime_data.coordinator.async_request_refresh()
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: BetterTrucksConfigEntry) -> bool:
+async def async_unload_entry(
+    hass: HomeAssistant, entry: BetterTrucksConfigEntry
+) -> bool:
     """Unload the Better Trucks config entry."""
     if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         return False

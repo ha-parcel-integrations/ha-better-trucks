@@ -4,6 +4,7 @@ These need no Home Assistant instance — the whole point of keeping
 ``parcels.py`` free of I/O is that the carrier-specific mapping (the part you
 rewrite per carrier) can be tested as plain functions.
 """
+
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -128,6 +129,7 @@ def test_build_history_orders_oldest_to_newest():
 def test_build_history_caps_to_max_events():
     """Create 25 events to test the 20-event cap."""
     from tests.payloads import tracking_event
+
     events = [
         tracking_event("IN_TRANSIT", f"2026-04-{day:02d}T10:00:00Z")
         for day in range(1, 26)
@@ -143,18 +145,23 @@ def test_build_history_handles_missing_and_malformed():
 
 def test_build_history_keeps_unparseable_timestamp_last():
     from tests.payloads import tracking_event
+
     history = build_history(
         [
             tracking_event("SHIPMENT_CREATED", "2026-04-24T10:00:00Z"),
             tracking_event("INJECTED", "not-a-date"),
         ]
     )
-    assert [entry["raw_status"] for entry in history] == ["SHIPMENT_CREATED", "INJECTED"]
+    assert [entry["raw_status"] for entry in history] == [
+        "SHIPMENT_CREATED",
+        "INJECTED",
+    ]
 
 
 def test_build_history_uses_status_as_raw_status():
     """Better Trucks uses status code as raw_status (no separate description field)."""
     from tests.payloads import tracking_event
+
     history = build_history([tracking_event("INJECTED", "2026-04-24T10:00:00Z")])
     assert history[0]["raw_status"] == "INJECTED"
 
@@ -252,7 +259,9 @@ def test_normalize_active_parcel_has_point_estimate():
     parcel = normalize_parcel(active_sample())
     assert parcel["status"] == ParcelStatus.OUT_FOR_DELIVERY
     assert parcel["delivered"] is False
-    assert parcel["planned_from"] == "2026-06-12T18:51:48+00:00"  # parse_iso adds UTC timezone
+    assert (
+        parcel["planned_from"] == "2026-06-12T18:51:48+00:00"
+    )  # parse_iso adds UTC timezone
     assert parcel["planned_to"] is None  # No second bound in Better Trucks payload
 
 

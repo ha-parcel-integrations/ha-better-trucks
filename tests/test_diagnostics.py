@@ -1,4 +1,5 @@
 """Tests for Better Trucks diagnostics."""
+
 from datetime import timedelta
 from unittest.mock import MagicMock
 
@@ -49,7 +50,9 @@ async def test_diagnostics_redacts_and_counts(hass):
     assert result["incoming"][0]["raw"]["address_to"] == "**REDACTED**"
     # tracking_status is redacted at the field level, but dict structure preserved
     assert result["incoming"][0]["raw"]["tracking_status"]["latitude"] == "**REDACTED**"
-    assert result["incoming"][0]["raw"]["tracking_status"]["longitude"] == "**REDACTED**"
+    assert (
+        result["incoming"][0]["raw"]["tracking_status"]["longitude"] == "**REDACTED**"
+    )
     # non-identifying fields survive, or the diagnostics would be useless
     assert result["incoming"][0]["status"] == "out_for_delivery"
 

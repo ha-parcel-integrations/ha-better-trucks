@@ -2,19 +2,26 @@
 
 Based on the real payload structure documented in carrier-research/better-trucks/api/tracking.md
 """
+
 from __future__ import annotations
 
 ACTIVE_CODE = "BTS_XXXXXXXXXXX"
 DELIVERED_CODE = "BTS_YYYYYYYYYYY"
 
 
-def tracking_event(status: str, object_created: str, location: dict | None = None, event_details: dict | None = None) -> dict:
+def tracking_event(
+    status: str,
+    object_created: str,
+    location: dict | None = None,
+    event_details: dict | None = None,
+) -> dict:
     """One entry of Better Trucks' tracking_history array."""
     event = {
         "object_created": object_created,
         "status": status,
         "status_details": status,  # Simplified for tests
-        "location": location or {"city": None, "state": None, "zip": None, "country": None},
+        "location": location
+        or {"city": None, "state": None, "zip": None, "country": None},
     }
     if event_details:
         event["event_details"] = event_details
@@ -78,13 +85,69 @@ def delivered_sample(code: str = DELIVERED_CODE) -> dict:
             ],
         },
         "tracking_history": [
-            tracking_event("DELIVERED", "2026-06-12T18:51:48", {"city": "<DEST CITY>", "state": "<ST>", "zip": "<ZIP>", "country": "US"}),
-            tracking_event("OUT_FOR_DELIVERY", "2026-06-12T14:25:19", {"city": "<HUB CITY>", "state": "<ST>", "zip": "<ZIP>", "country": "US"}),
-            tracking_event("SCANNED_AT_HUB_DET", "2026-06-12T10:09:10", {"city": "<HUB CITY>", "state": "<ST>", "zip": "<ZIP>", "country": "US"}),
-            tracking_event("SCANNED_AT_HUB_CHI", "2026-06-12T00:51:59", {"city": "<HUB CITY>", "state": "<ST>", "zip": "<ZIP>", "country": "US"}, {"location_info": "facility_id:0"}),
-            tracking_event("INJECTED", "2026-06-12T00:50:59", {"city": "<HUB CITY>", "state": "<ST>", "zip": "<ZIP>", "country": "US"}, {"location_info": "facility_id:0"}),
+            tracking_event(
+                "DELIVERED",
+                "2026-06-12T18:51:48",
+                {
+                    "city": "<DEST CITY>",
+                    "state": "<ST>",
+                    "zip": "<ZIP>",
+                    "country": "US",
+                },
+            ),
+            tracking_event(
+                "OUT_FOR_DELIVERY",
+                "2026-06-12T14:25:19",
+                {
+                    "city": "<HUB CITY>",
+                    "state": "<ST>",
+                    "zip": "<ZIP>",
+                    "country": "US",
+                },
+            ),
+            tracking_event(
+                "SCANNED_AT_HUB_DET",
+                "2026-06-12T10:09:10",
+                {
+                    "city": "<HUB CITY>",
+                    "state": "<ST>",
+                    "zip": "<ZIP>",
+                    "country": "US",
+                },
+            ),
+            tracking_event(
+                "SCANNED_AT_HUB_CHI",
+                "2026-06-12T00:51:59",
+                {
+                    "city": "<HUB CITY>",
+                    "state": "<ST>",
+                    "zip": "<ZIP>",
+                    "country": "US",
+                },
+                {"location_info": "facility_id:0"},
+            ),
+            tracking_event(
+                "INJECTED",
+                "2026-06-12T00:50:59",
+                {
+                    "city": "<HUB CITY>",
+                    "state": "<ST>",
+                    "zip": "<ZIP>",
+                    "country": "US",
+                },
+                {"location_info": "facility_id:0"},
+            ),
             tracking_event("TRANSACTION_CREATED", "2026-06-10T22:14:22", None),
-            tracking_event("SHIPMENT_CREATED", "2026-06-10T22:14:21", {"city": "<ORIGIN CITY>", "state": "<ST>", "zip": "<ZIP>", "country": "US"}),
+            tracking_event(
+                "SHIPMENT_CREATED",
+                "2026-06-10T22:14:21",
+                {
+                    "city": "<ORIGIN CITY>",
+                    "state": "<ST>",
+                    "zip": "<ZIP>",
+                    "country": "US",
+                },
+            ),
         ],
     }
 

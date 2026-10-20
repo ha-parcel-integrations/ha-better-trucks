@@ -1,4 +1,5 @@
 """Tests for the Better Trucks refresh button."""
+
 from unittest.mock import AsyncMock, MagicMock
 
 from custom_components.better_trucks.button import BetterTrucksRefreshButton

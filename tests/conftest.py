@@ -1,4 +1,5 @@
 """pytest configuration for the Better Trucks test suite."""
+
 import sys
 
 import pytest

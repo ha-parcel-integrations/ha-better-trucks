@@ -5,6 +5,7 @@ objects beyond the config entry's options. That is deliberate: it keeps the
 carrier-specific mapping apart from the coordinator, and it makes the mapping
 trivially unit-testable without spinning up HA.
 """
+
 from __future__ import annotations
 
 import logging
@@ -466,7 +467,9 @@ def normalize_parcel(raw: dict, *, include_history: bool = False) -> dict:
         "url": tracking_url(tracking_code),
         "weight": weight,
         "dimensions": dimensions,
-        "history": build_history(raw.get("tracking_history")) if include_history else None,
+        "history": build_history(raw.get("tracking_history"))
+        if include_history
+        else None,
         "raw": raw,
     }
 
@@ -502,9 +505,7 @@ def apply_delivered_filter(parcels: list[dict], entry: ConfigEntry) -> list[dict
     shows.
     """
     options = entry.options
-    filter_type = options.get(
-        CONF_DELIVERED_FILTER_TYPE, DEFAULT_DELIVERED_FILTER_TYPE
-    )
+    filter_type = options.get(CONF_DELIVERED_FILTER_TYPE, DEFAULT_DELIVERED_FILTER_TYPE)
     amount = int(
         options.get(CONF_DELIVERED_FILTER_AMOUNT, DEFAULT_DELIVERED_FILTER_AMOUNT)
     )

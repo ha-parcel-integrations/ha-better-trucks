@@ -5,6 +5,7 @@ registered by the user. The endpoint answers HTTP 200 for all requests, includin
 unknown numbers — unknown is indicated by status="UNKNOWN" and an empty
 tracking_history array, not by HTTP status.
 """
+
 from __future__ import annotations
 
 import logging
@@ -76,7 +77,9 @@ class BetterTrucksApiClient:
             if response.status == 429:
                 retry_after_header = response.headers.get("Retry-After")
                 try:
-                    retry_after = float(retry_after_header) if retry_after_header else None
+                    retry_after = (
+                        float(retry_after_header) if retry_after_header else None
+                    )
                 except ValueError:
                     retry_after = None  # an HTTP-date, not seconds; let the caller's own backoff handle it
                 raise BetterTrucksApiError(

@@ -2,6 +2,7 @@
 
 The parcel mapping itself is covered by ``test_parcels.py``.
 """
+
 from unittest.mock import AsyncMock
 
 import pytest
@@ -40,7 +41,9 @@ def _entry_with(parcels: list[dict]) -> MockConfigEntry:
 
 def _in_transit(code: str = ACTIVE_CODE) -> dict:
     sample = active_sample(code)
-    sample["tracking_status"]["status"] = "INJECTED"  # Better Trucks uses INJECTED for in-transit
+    sample["tracking_status"]["status"] = (
+        "INJECTED"  # Better Trucks uses INJECTED for in-transit
+    )
     sample["tracking_status"]["status_details"] = "Received in BT network"
     return sample
 
@@ -312,9 +315,7 @@ async def test_event_carries_device_id(hass):
     coordinator = BetterTrucksCoordinator(hass, client, entry)
 
     events = []
-    hass.bus.async_listen(
-        f"{DOMAIN}_parcel_status_changed", lambda e: events.append(e)
-    )
+    hass.bus.async_listen(f"{DOMAIN}_parcel_status_changed", lambda e: events.append(e))
 
     client.async_get_parcel.return_value = _in_transit()
     await coordinator._async_update_data()
@@ -332,9 +333,7 @@ async def test_fires_status_changed_event(hass):
     coordinator = BetterTrucksCoordinator(hass, client, entry)
 
     events = []
-    hass.bus.async_listen(
-        f"{DOMAIN}_parcel_status_changed", lambda e: events.append(e)
-    )
+    hass.bus.async_listen(f"{DOMAIN}_parcel_status_changed", lambda e: events.append(e))
 
     client.async_get_parcel.return_value = _in_transit()
     await coordinator._async_update_data()  # first refresh: suppressed

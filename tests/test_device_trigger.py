@@ -1,4 +1,5 @@
 """Tests for Better Trucks device triggers."""
+
 from custom_components.better_trucks.const import DOMAIN
 from custom_components.better_trucks.device_trigger import (
     TRIGGER_EVENTS,

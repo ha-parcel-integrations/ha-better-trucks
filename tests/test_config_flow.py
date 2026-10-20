@@ -1,4 +1,5 @@
 """Tests for the Better Trucks config and options flow."""
+
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.better_trucks.config_flow import (
@@ -88,9 +89,7 @@ async def test_options_add_parcel(hass):
         result["flow_id"], _parcel_input("BTS_12345678")
     )
     assert result["type"] == "create_entry"
-    assert result["data"][CONF_PARCELS] == [
-        {CONF_TRACKING_CODE: "BTS_12345678"}
-    ]
+    assert result["data"][CONF_PARCELS] == [{CONF_TRACKING_CODE: "BTS_12345678"}]
 
 
 async def test_options_add_code_with_separators(hass):
@@ -102,9 +101,7 @@ async def test_options_add_code_with_separators(hass):
         result["flow_id"], _parcel_input("BTS-123 45678")
     )
     assert result["type"] == "create_entry"
-    assert result["data"][CONF_PARCELS] == [
-        {CONF_TRACKING_CODE: "BTS_12345678"}
-    ]
+    assert result["data"][CONF_PARCELS] == [{CONF_TRACKING_CODE: "BTS_12345678"}]
 
 
 async def test_options_accepts_a_code_that_wouldnt_match_a_shape_regex(hass):
@@ -112,12 +109,11 @@ async def test_options_accepts_a_code_that_wouldnt_match_a_shape_regex(hass):
     entry.add_to_hass(hass)
     result = await _open_options_step(hass, entry, "parcels")
     result = await hass.config_entries.options.async_configure(
-        result["flow_id"], _parcel_input("BTS_1234567")  # too short for the old regex
+        result["flow_id"],
+        _parcel_input("BTS_1234567"),  # too short for the old regex
     )
     assert result["type"] == "create_entry"
-    assert result["data"][CONF_PARCELS] == [
-        {CONF_TRACKING_CODE: "BTS_1234567"}
-    ]
+    assert result["data"][CONF_PARCELS] == [{CONF_TRACKING_CODE: "BTS_1234567"}]
 
 
 async def test_options_de_duplicates_tracking_codes(hass):
@@ -132,10 +128,12 @@ async def test_options_de_duplicates_tracking_codes(hass):
 
 
 async def test_options_remove_parcel(hass):
-    entry = _hub([
-        {CONF_TRACKING_CODE: "BTS_111111111"},
-        {CONF_TRACKING_CODE: "BTS_222222222"},
-    ])
+    entry = _hub(
+        [
+            {CONF_TRACKING_CODE: "BTS_111111111"},
+            {CONF_TRACKING_CODE: "BTS_222222222"},
+        ]
+    )
     entry.add_to_hass(hass)
     result = await _open_options_step(hass, entry, "parcels")
     result = await hass.config_entries.options.async_configure(
@@ -180,7 +178,9 @@ async def test_options_changes_history_and_delivered(hass):
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
         _settings_input(
-            history=True, filter_type="parcels", amount=5,
+            history=True,
+            filter_type="parcels",
+            amount=5,
         ),
     )
     assert result["type"] == "create_entry"
