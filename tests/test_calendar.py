@@ -1,6 +1,6 @@
 """Tests for the Better Trucks deliveries calendar."""
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from unittest.mock import MagicMock
 
 from custom_components.better_trucks.calendar import BetterTrucksDeliveriesCalendar
@@ -106,3 +106,32 @@ async def test_get_events_filters_by_range():
     end = datetime(2100, 1, 1, tzinfo=timezone.utc)
     events = await cal.async_get_events(MagicMock(), start, end)
     assert {e.uid for e in events} == {"FUTURE"}
+
+
+def test_whole_day_window_is_an_all_day_event():
+    cal = _cal(
+        [
+            _parcel(
+                "A",
+                planned_from="2099-01-01T00:00:00+00:00",
+                planned_to="2099-01-01T23:59:59+00:00",
+            )
+        ]
+    )
+    event = cal._events()[0]
+    assert event.start == date(2099, 1, 1)
+    assert event.end == date(2099, 1, 2)
+    assert event.all_day
+
+
+def test_moment_stretched_to_end_of_day_stays_timed():
+    cal = _cal(
+        [
+            _parcel(
+                "A",
+                planned_from="2099-01-01T10:00:00+00:00",
+                planned_to="2099-01-01T23:59:59+00:00",
+            )
+        ]
+    )
+    assert not cal._events()[0].all_day

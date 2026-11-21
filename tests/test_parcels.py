@@ -230,12 +230,12 @@ def test_capabilities_match_what_normalize_parcel_actually_returns():
 
 
 def test_normalize_delivered_parcel():
-    """Better Trucks: locality string for sender/receiver, no weight/dimensions."""
+    """Better Trucks: no names, no weight/dimensions."""
     parcel = normalize_parcel(delivered_sample())
     assert parcel["carrier"] == "Better Trucks"
     assert parcel["barcode"] == "BTS_YYYYYYYYYYY"
-    assert parcel["sender"] == "<ORIGIN CITY>, <ST>"
-    assert parcel["receiver"] == "<DEST CITY>, <ST>"
+    assert parcel["sender"] is None
+    assert parcel["receiver"] is None
     assert parcel["status"] == ParcelStatus.DELIVERED
     assert parcel["raw_status"] == "DELIVERED"
     assert parcel["delivered"] is True
@@ -259,14 +259,12 @@ def test_normalize_history_is_opt_in():
 
 
 def test_normalize_active_parcel_has_point_estimate():
-    """Better Trucks provides a point estimate (eta), not a window."""
+    """Better Trucks provides a point estimate (eta) that runs to end of day."""
     parcel = normalize_parcel(active_sample())
     assert parcel["status"] == ParcelStatus.OUT_FOR_DELIVERY
     assert parcel["delivered"] is False
-    assert (
-        parcel["planned_from"] == "2026-06-12T18:51:48+00:00"
-    )  # parse_iso adds UTC timezone
-    assert parcel["planned_to"] is None  # No second bound in Better Trucks payload
+    assert parcel["planned_from"] == "2026-06-12T18:51:48Z"
+    assert parcel["planned_to"] == "2026-06-12T23:59:59+00:00"
 
 
 def test_normalize_pending_placeholder():
@@ -285,7 +283,7 @@ def test_normalize_handles_null_location():
     raw = active_sample()
     raw["tracking_status"]["location"] = None
     parcel = normalize_parcel(raw)
-    assert parcel["sender"] is not None  # Should handle null gracefully
+    assert parcel["sender"] is None
 
 
 def test_normalize_keeps_raw_payload():
