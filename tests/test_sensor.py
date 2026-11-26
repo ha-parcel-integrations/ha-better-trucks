@@ -77,6 +77,17 @@ def test_next_delivery_picks_earliest():
     assert sensor.extra_state_attributes["barcode"] == "B"
 
 
+def test_next_delivery_carries_the_contents_of_the_earliest_parcel():
+    coordinator = _coordinator(
+        [
+            {**_parcel("A", planned_from="2099-05-02T10:00:00Z"), "contents": "Socks"},
+            {**_parcel("B", planned_from="2099-05-01T10:00:00Z"), "contents": "Shoes"},
+        ]
+    )
+    sensor = BetterTrucksNextDeliverySensor(coordinator, _entry())
+    assert sensor.extra_state_attributes["contents"] == "Shoes"
+
+
 def test_next_delivery_none_without_moments():
     sensor = BetterTrucksNextDeliverySensor(_coordinator([_parcel("A")]), _entry())
     assert sensor.native_value is None

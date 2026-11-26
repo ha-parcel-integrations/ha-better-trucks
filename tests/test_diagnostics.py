@@ -19,6 +19,7 @@ async def test_diagnostics_redacts_and_counts(hass):
             "barcode": "BTS_12345678",
             "sender": "<ORIGIN CITY>, <ST>",
             "receiver": "<DEST CITY>, <ST>",
+            "contents": "Running shoes",
             "status": "out_for_delivery",
             "raw": {
                 "tracking_number": "BTS_12345678",
@@ -46,6 +47,7 @@ async def test_diagnostics_redacts_and_counts(hass):
     assert result["entry_options"]["parcels"][0]["tracking_code"] == "**REDACTED**"
     assert result["incoming"][0]["barcode"] == "**REDACTED**"
     assert result["incoming"][0]["receiver"] == "**REDACTED**"
+    assert result["incoming"][0]["contents"] == "**REDACTED**"
     assert result["incoming"][0]["raw"]["tracking_number"] == "**REDACTED**"
     assert result["incoming"][0]["raw"]["address_to"] == "**REDACTED**"
     # tracking_status is redacted at the field level, but dict structure preserved

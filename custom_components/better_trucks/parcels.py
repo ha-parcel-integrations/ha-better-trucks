@@ -551,6 +551,7 @@ def normalize_parcel(raw: dict, *, include_history: bool = False) -> dict:
         "barcode": tracking_code,
         "sender": sender,
         "receiver": receiver,
+        "contents": None,
         "status": status,
         "raw_status": status_code,  # Keep hub suffix intact
         "delivered": delivered,

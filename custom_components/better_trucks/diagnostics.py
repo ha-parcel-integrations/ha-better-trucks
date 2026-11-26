@@ -27,6 +27,7 @@ TO_REDACT = {
     "barcode",
     "sender",
     "receiver",
+    "contents",
     "url",
     # Better Trucks payload fields
     "tracking_number",

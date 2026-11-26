@@ -38,6 +38,7 @@ A custom Home Assistant integration that tracks your [Better Trucks](https://bet
 - Summary sensors: incoming parcels, next delivery, recently delivered parcels
 - Read-only **Deliveries** calendar with the expected delivery windows
 - `better_trucks.track_parcel` / `better_trucks.untrack_parcel` services, so a dashboard button can add a parcel
+- A `contents` field on every parcel, set in your own words with the `better_trucks.update_contents` service; it titles the calendar event and shows on the next-delivery sensor
 - Events + device triggers for no-code automations (parcel registered, status changed, delivered, delivery time changed)
 - Opt-in per-parcel status history
 - Manual refresh button and a diagnostic last-update sensor
@@ -118,7 +119,11 @@ Standard HA removal applies: **Settings → Devices & Services → Better Trucks
 A delivered parcel moves from its per-parcel sensor to the delivered sensor automatically.
 
 A **`calendar.better_trucks_deliveries`** entity shows expected delivery dates
-for active parcels — read-only, no extra API calls.
+for active parcels — read-only, no extra API calls. An event is titled with the
+parcel's `contents` when you set one, else its sender.
+
+The `sensor.better_trucks_next_delivery` sensor shows the `contents` of that
+parcel in its attributes.
 
 A **`button.better_trucks_refresh`** entity forces an immediate poll, without
 waiting for the next scheduled interval.
@@ -154,8 +159,9 @@ Every payload is the full normalised parcel plus the hub's `device_id`. Events a
 
 | Service | Fields | Description |
 |---|---|---|
-| `better_trucks.track_parcel` | `tracking_code` | Start tracking a parcel |
+| `better_trucks.track_parcel` | `tracking_code`, `contents` (optional) | Start tracking a parcel, optionally noting what is in it |
 | `better_trucks.untrack_parcel` | `tracking_code` | Stop tracking a parcel |
+| `better_trucks.update_contents` | `tracking_code`, `contents` | Set what is in a parcel, tracked or not; an empty `contents` clears it. It is stored locally, titles the calendar event and shows on the next-delivery sensor |
 
 ## Examples
 
